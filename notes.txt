@@ -1,0 +1,38 @@
+superuser: admin
+pw: 123
+
+#install apps pip
+pip install django
+
+#see give out installed apps
+pip freeze
+
+#create start django project
+django-admin.py startproject PROJECTNAME
+
+#run webserver
+python manage.py runserver
+
+#create app in django project
+python manage.py startapp APPNAME
+
+-edit settings.py in PROJECTNAME and add app to INSTALLED_APPS =
+-edit PROJECTNAME/urls.py add include include
+-edit PROJECTNAME/urls.py path('', include('APPNAME.urls'))
+-edit APPNAME/urls.py path('', views.home, name="home"),
+-create urls.py in APPNAME folder and add path('', views.home, name="home")
+-edit views.py in APPNAME folder
+-create templates folder and an APPNAME folder inside
+-create home.html in templates/events and fill with html
+
+#get request
+-urls.py path('<int:year>/<str:month>', views.home, name="home")
+-view def home(request, year, month):
+	return render(request, 'APPNAME/home.html', {
+		"year": year,
+		"month": month,
+	})
+-template {{ month }}</br>{{ year }}
+
+#make extended templates {% block content %}{% endblock %}
+- {% extends 'events/base.html' %}
