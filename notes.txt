@@ -1,7 +1,7 @@
 superuser: admin
 pw: 123
 
-#install apps pip
+#install apps pip a
 pip install django
 
 #see give out installed apps
