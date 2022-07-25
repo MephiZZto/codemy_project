@@ -36,3 +36,32 @@ python manage.py startapp APPNAME
 
 #make extended templates {% block content %}{% endblock %}
 - {% extends 'events/base.html' %}
+
+#add models for database makemirations migrate after
+
+#add things to admin site in admin.py register models
+
+#change admin area view in admin.py
+
+#add forms
+- create forms.py file in App import libs and:
+	class NAMEXX(ModelForm):
+		class Meta:
+		model = MODELNAME
+		#fields = "__all__"
+- in views.py add forms
+def VIEWNAME(request):
+	form = NAMEXX
+	return render(request, 'path/file.html', {'form':form})
+- in file.html for view
+	<form action="" method="POST">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Submit" class="btn btn-secondary"\>
+	</form>
+#to change the django form we can add fixed variables in class Meta: in forms.py
+		#labels (discription) with
+		labels = {'name': 'Venue Name', 'email': ''}
+		#css for the form elements with
+		widgets = {'name': forms.TextInput(attrs={'class':'form-control', 'placeholder':'Venue Name'}),}
+#to auto fill a form with search use instance=MODEL.objects.get(pk=venue_id)
