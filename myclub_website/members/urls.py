@@ -13,21 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from xml.etree.ElementInclude import include
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-	path('', include('events.urls')),
-	# Both path needed for django auth functions where members is app name
-	path('members/', include('django.contrib.auth.urls')),
-	path('members/', include('members.urls')),
+	path('login_user', views.login_user, name="login"),
+	path('logout_user', views.logout_user, name="logout"),
+	path('register_user', views.register_user, name="register_user"),
 ]
-
-# Configure Admin Titles
-admin.site.site_header = "My Club Admin Page"
-# Configure Admin Browser Title
-admin.site.site_title = "My Club Admin Page"
-# Configure Admin 2nd Title?
-admin.site.index_title = "Welcome to Club Admin Area"

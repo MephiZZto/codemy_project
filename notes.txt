@@ -65,3 +65,30 @@ def VIEWNAME(request):
 		#css for the form elements with
 		widgets = {'name': forms.TextInput(attrs={'class':'form-control', 'placeholder':'Venue Name'}),}
 #to auto fill a form with search use instance=MODEL.objects.get(pk=venue_id)
+#db query .filter or .order_by()
+
+#config admin section in project folder urls.py
+#fully edit admin css only possible in django lib under venv/Lib/site-packages/django/contrib/admin/static/admin/css
+
+#messages method
+- from django.contrib.messages import messages in views.py
+- messages.success(request, ("There was an error login in, try again!")) in views.py
+- add to a html file (base.html maybe?)
+		{% if messages %}
+		{% for message in messages %}
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+				<strong>{{ message }}</strong>
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endfor %}
+	{% endif %}
+
+#user auth system
+-create new app and add app to settings.py
+-create urls.py file in app
+-add paths in urls.py main project folder with normal path and:
+	path('APPNAME/', include('django.contrib.auth.urls')),
+	path('APPNAME/', include('APPNAME.urls')),
+-create templates folders with an "authenticate" folder (name not important)
+-add from django.contrib.auth import authenticate, login, logout to views.py
+-if {% if user.is_authenticated %} on .html to show things or not
