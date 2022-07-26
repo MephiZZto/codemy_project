@@ -16,6 +16,9 @@ Including another URLconf
 from xml.etree.ElementInclude import include
 from django.contrib import admin
 from django.urls import path, include
+# imports for our media and static folder?
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,7 +26,7 @@ urlpatterns = [
 	# Both path needed for django auth functions where members is app name
 	path('members/', include('django.contrib.auth.urls')),
 	path('members/', include('members.urls')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Configure Admin Titles
 admin.site.site_header = "My Club Admin Page"

@@ -9,7 +9,7 @@ class VenueForm(ModelForm):
 	class Meta:
 		model = Venue
 		#fields = "__all__"
-		fields = ('name', 'address', 'zip_code', 'phone', 'web', 'email',)
+		fields = ('name', 'address', 'zip_code', 'phone', 'web', 'email', 'venue_image')
 
 		#style form sheet with lable is 
 		labels = {
@@ -19,6 +19,7 @@ class VenueForm(ModelForm):
 			'phone': '',
 			'web': '',
 			'email': '',
+			'venue_image': '',
 		}
 		#style form sheet with css where attrs are html element attributes like class="form-control"
 		widgets = {

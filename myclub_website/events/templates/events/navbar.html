@@ -55,18 +55,28 @@
 				</li>
 			</ul>
 		</li>
-		  {% if user.is_authenticated %}
-		  	<li class="nav-item">
-				<a class="nav-link" href="{% url 'logout' %}">Logout</a>
+		{% if user.is_authenticated %}
+			{% if user.is_superuser %}
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
+				<ul class="dropdown-menu">
+					<li class="nav-item">
+						<a class="dropdown-item" href="{% url 'admin_approval' %}">Events</a>
+					</li>
+				</ul>
 			</li>
-		  {% else %}
+			{% endif %}
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'logout' %}">Logout</a>
+				</li>
+		{% else %}
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'login' %}">Login</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'register_user' %}">Register</a>
 			</li>
-		  {% endif %}
+		{% endif %}
 			
 
 		</ul>

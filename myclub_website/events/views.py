@@ -26,6 +26,61 @@ from reportlab.lib.pagesizes import letter
 #import Pagination stuff
 from django.core.paginator import Paginator
 
+def show_event(request, event_id):
+	event = Event.objects.get(pk=event_id)
+	if event:
+		return render(request, 'events/show_event.html', {
+			"event": event,
+		})
+	else:
+		messages.success(request, ("Event does not exist!"))
+		return redirect('home')
+
+def venue_events(request, venue_id):
+	# Grab the venue
+	venue = Venue.objects.get(id=venue_id)
+	# Grab the events for that venue
+	events = venue.event_set.all()
+	if events:
+		return render(request, 'events/venue_events.html', {
+			"events": events,
+		})
+	else:
+		messages.success(request, ("No Events found for this Venue!"))
+		return redirect('admin_approval')
+
+def admin_approval(request):
+	# get counts
+	event_count = Event.objects.all().count()
+	venue_count = Venue.objects.all().count()
+	user_count = User.objects.all().count()
+
+	venue_list = Venue.objects.all()
+	event_list = Event.objects.all().order_by('event_date')
+	if request.user.is_superuser:
+		if request.method == "POST":
+			id_list = request.POST.getlist('boxes')
+			#print(id_list)
+			# Terrible fix inc :)
+			event_list.update(approved=False)
+			# Update DB
+			for x in id_list:
+				Event.objects.filter(pk=int(x)).update(approved=True)
+			messages.success(request, ("Events Approval updated!"))
+			return redirect('admin_approval')
+		else:
+			return render(request, 'events/admin_approval.html', {
+			"event_list": event_list,
+			"venue_list": venue_list,
+			"event_count": event_count,
+			"venue_count": venue_count,
+			"user_count": user_count,
+		})
+	else:
+		messages.success(request, ("Access Denied!"))
+		return redirect('home')
+	
+
 #generate a .pdf file
 def venue_pdf(request):
 	# create bytestream buffer
@@ -116,7 +171,7 @@ def search_events(request):
 		return render(request, 'events/search_events.html', {})
 
 def all_events(request):
-	event_list = Event.objects.all().order_by('name')
+	event_list = Event.objects.all().order_by('-event_date')
 	return render(request, 'events/event_list.html', {
 		'event_list': event_list
 	})
@@ -173,7 +228,7 @@ def delete_event(request, event_id):
 
 def update_venue(request, venue_id):
 	venue = Venue.objects.get(pk=venue_id)
-	form = VenueForm(request.POST or None, instance=venue)
+	form = VenueForm(request.POST or None, request.FILES or None, instance=venue)
 	if form.is_valid():
 		form.save()
 		return redirect('list-venues')
@@ -220,7 +275,7 @@ def list_venues(request):
 def add_venue(request):
 	submitted = False
 	if request.method == "POST":
-		form = VenueForm(request.POST)
+		form = VenueForm(request.POST, request.FILES)
 		if form.is_valid():
 			#add an user id automaticly
 			venue = form.save(commit=False)

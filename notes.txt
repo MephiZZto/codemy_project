@@ -96,3 +96,23 @@ def VIEWNAME(request):
 -add class RegisterUserForm(UserCreationForm): (inherit UserCreationForm and adds:)
 #diff forms for diff users
 -create diffrent form in form.py and do if if request.user.is_superuser: in views.py
+#uploading images and making media folder
+-import os in settings.py
+-add media root in settings.py
+-import # imports for our media and static folder in urls.py (base project folder)
+	from django.conf import settings
+	from django.conf.urls.static import static
+-add path in urls.py (base project folder) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+-add in model image field with right type
+-add <form action="" method="POST" enctype="multipart/form-data"> in form in html file
+-add request.FILES in views.py when creating form (form = VenueForm(request.POST, request.FILES))
+#custom field to calculate query data in models.py 	
+	@property
+	def Days_till(self):
+		return 41
+#how to remove groups in admin.py
+	from django.contrib.auth.models import Group
+	admin.site.unregister(Group)
+#static folder for .js .css stuff
+-create /static/APPNAME folder
+-add {% load static %} to html file

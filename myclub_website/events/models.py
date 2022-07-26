@@ -1,6 +1,8 @@
 from django.db import models
 #Authentication System
 from django.contrib.auth.models import User
+#Date stuff
+from datetime import date
 
 class Venue(models.Model):
 	name = models.CharField('Venue Name', max_length=120)
@@ -11,6 +13,7 @@ class Venue(models.Model):
 	email = models.EmailField('Email Address', blank=True)
 	#default only changes empty fields so after migrations?
 	owner = models.IntegerField("Venue Owner", blank=False, default=1)
+	venue_image = models.ImageField("Image", null=True, blank=True, upload_to="images/")
 
 	def __str__(self):
 		return self.name
@@ -30,6 +33,22 @@ class Event(models.Model):
 	manager = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
 	description = models.TextField(blank=True)
 	attendees = models.ManyToManyField(MyClubUser, blank=True)
+	approved = models.BooleanField('Approved', default=False)
 
 	def __str__(self):
 		return self.name
+	
+	@property
+	def Days_till(self):
+		today = date.today()
+		days_till = self.event_date.date() - today
+		days_till_stripped = str(days_till).split(",", 1)[0]
+		return days_till_stripped
+
+	@property
+	def Is_past(self):
+		if self.event_date.date() < date.today():
+			thing = "Past"
+		else:
+			thing = "Future"
+		return thing
