@@ -91,4 +91,8 @@ def VIEWNAME(request):
 	path('APPNAME/', include('APPNAME.urls')),
 -create templates folders with an "authenticate" folder (name not important)
 -add from django.contrib.auth import authenticate, login, logout to views.py
--if {% if user.is_authenticated %} on .html to show things or not
+-if {% if user.is_authenticated %} on .html to show things or not {% if user == event.manager %} || alternative decorators
+-add more then the standard fields create forms.py import from django.contrib.auth.forms import UserCreationForm from django.contrib.auth.models import User from django import forms
+-add class RegisterUserForm(UserCreationForm): (inherit UserCreationForm and adds:)
+#diff forms for diff users
+-create diffrent form in form.py and do if if request.user.is_superuser: in views.py

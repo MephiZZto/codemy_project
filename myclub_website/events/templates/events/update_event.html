@@ -1,13 +1,22 @@
 {% extends 'events/base.html' %}
 
 {% block content %}
-	<h1>Update Event</h1>
-	<form action="" method="POST">
-		{% csrf_token %}
+	{% if user.is_authenticated %}
+		{% if user == event.manager %}
+		<h1>Update Event</h1>
+		<form action="" method="POST">
+			{% csrf_token %}
 
-		{{ form.as_p }}
+			{{ form.as_p }}
 
-		<input type="submit" value="Update" class="btn btn-secondary"\>
-	</form>
-	<br/><br/>
+			<input type="submit" value="Update" class="btn btn-secondary"\>
+		</form>
+		<br/><br/>
+		{% else %}
+			<p>Access Denied</p>
+		{% endif %}
+	{% else %}
+		<p>Sorry! You Must be Logged in!</p><br/>
+		<a class="" href="{% url 'login' %}">Login</a>
+	{% endif %}
 {% endblock %}

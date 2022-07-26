@@ -2,9 +2,13 @@ from django.shortcuts import redirect, render
 #imports for calendar functions
 import calendar
 from calendar import HTMLCalendar
+
+from django.contrib.auth.models import User
+
+from django.contrib import messages
 #imports for datetimes
 from datetime import datetime
-from .forms import VenueForm, EventForm
+from .forms import VenueForm, EventForm, EventFormAdmin
 # lazy redirect is alternative for this:
 from django.http import HttpResponseRedirect
 #import db model for Events
@@ -92,6 +96,25 @@ def venue_text(request):
 	response.writelines(lines)
 	return response
 
+def my_events(request):
+	if request.user.is_authenticated:
+		me = request.user.id
+		events = Event.objects.filter(attendees=me)
+		return render(request, 'events/my_events.html', {
+			'events': events
+		})
+	else:
+		messages.success(request, ("You are not Logged in!"))
+		return redirect('home')
+
+def search_events(request):
+	if request.method == "POST":
+		searched = request.POST['searched']
+		events = Event.objects.filter(name__contains=searched)
+		return render(request, 'events/search_events.html', {'searched':searched, 'events':events})
+	else:
+		return render(request, 'events/search_events.html', {})
+
 def all_events(request):
 	event_list = Event.objects.all().order_by('name')
 	return render(request, 'events/event_list.html', {
@@ -101,19 +124,36 @@ def all_events(request):
 def add_event(request):
 	submitted = False
 	if request.method == "POST":
-		form = EventForm(request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect('/add_event?submitted=True')
+		#user.id also works or any other field user.isadmin
+		if request.user.is_superuser:
+			form = EventFormAdmin(request.POST)
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect('/add_event?submitted=True')
+		else:
+			form = EventForm(request.POST)
+			if form.is_valid():
+				#add an user id automaticly
+				event = form.save(commit=False)
+				event.manager = request.user #logged in user name
+				event.save()
+				return HttpResponseRedirect('/add_event?submitted=True')
 	else:
-		form = EventForm
+		# Just going to page (not submitted)
+		if request.user.is_superuser:
+			form = EventFormAdmin
+		else:
+			form = EventForm
 		if 'submitted' in request.GET:
 			submitted = True
 	return render(request, 'events/add_event.html', {'form':form, 'submitted': submitted})
 
 def update_event(request, event_id):
 	event = Event.objects.get(pk=event_id)
-	form = EventForm(request.POST or None, instance=event)
+	if request.user.is_superuser:
+		form = EventFormAdmin(request.POST or None, instance=event)
+	else:
+		form = EventForm(request.POST or None, instance=event)
 	if form.is_valid():
 		form.save()
 		return redirect('list-events')
@@ -123,8 +163,13 @@ def update_event(request, event_id):
 
 def delete_event(request, event_id):
 	event = Event.objects.get(pk=event_id)
-	event.delete()
-	return redirect('list-events')
+	if event.manager == request.user:
+		event.delete()
+		messages.success(request, ("Event Deleted!"))
+		return redirect('list-events')
+	else:
+		messages.success(request, ("Access Denied!"))
+		return redirect('list-events')
 
 def update_venue(request, venue_id):
 	venue = Venue.objects.get(pk=venue_id)
@@ -151,8 +196,10 @@ def search_venues(request):
 
 def show_venue(request, venue_id):
 	venue = Venue.objects.get(pk=venue_id)
+	user = User.objects.get(pk=venue.owner)
 	return render(request, 'events/show_venue.html', {
-		'venue': venue
+		'venue': venue,
+		'user': user
 	})
 
 def list_venues(request):
@@ -175,7 +222,10 @@ def add_venue(request):
 	if request.method == "POST":
 		form = VenueForm(request.POST)
 		if form.is_valid():
-			form.save()
+			#add an user id automaticly
+			venue = form.save(commit=False)
+			venue.owner = request.user.id #logged in user id
+			venue.save()
 			return HttpResponseRedirect('/add_venue?submitted=True')
 	else:
 		form = VenueForm
@@ -194,10 +244,17 @@ def home(request, year=datetime.now().year, month=datetime.now().strftime('%B'))
 	now = datetime.now()
 	# create a calendar
 	cal = HTMLCalendar().formatmonth(year, month_number)
+
+	#Query the events model for dates
+	event_list = Event.objects.filter(
+		event_date__year = datetime.now().year,
+		event_date__month = month_number
+	)
 	return render(request, 'events/home.html', {
 		"year": year,
 		"month": month,
 		"monthnumber": month_number,
 		"cal": cal,
 		"currentyear": now.year,
+		"event_list": event_list,
 	})

@@ -30,7 +30,33 @@ class VenueForm(ModelForm):
 			'email': forms.EmailInput(attrs={'class':'form-control', 'placeholder':'E-Mail Address'}),
 		}
 
+#User Event Form
 class EventForm(ModelForm):
+	#deffine what to do
+	class Meta:
+		model = Event
+		#fields = "__all__"
+		fields = ('name', 'event_date', 'venue', 'attendees', 'description',)
+
+		#styleform: lable Value
+		labels = {
+			'name': '',
+			'event_date': 'YYYY-MM-DD HH:MM:SS',
+			'venue': 'Venue',
+			'attendees': 'Attendees',
+			'description': '',
+		}
+		#style form sheet with css where attrs are html element attributes like class="form-control"
+		widgets = {
+			'name': forms.TextInput(attrs={'class':'form-control', 'placeholder':'Event Name'}),
+			'event_date': forms.TextInput(attrs={'class':'form-control', 'placeholder':'Date'}),
+			'venue': forms.Select(attrs={'class':'form-select', 'placeholder':'Venue'}),
+			'attendees': forms.SelectMultiple(attrs={'class':'form-control', 'placeholder':'Attendees'}),
+			'description': forms.Textarea(attrs={'class':'form-control', 'placeholder':'Description'}),
+		}
+
+#Admin form
+class EventFormAdmin(ModelForm):
 	#deffine what to do
 	class Meta:
 		model = Event

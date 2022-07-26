@@ -16,8 +16,16 @@
 					<a class="dropdown-item" href="{% url 'list-events' %}">Show Events</a>
 				</li>
 				<li class="nav-item">
-					<a class="dropdown-item" href="{% url 'add-event' %}">Add Event</a>
+					<a class="dropdown-item" href="{% url 'search_events' %}">Search</a>
 				</li>
+				{% if user.is_authenticated %}
+					<li class="nav-item">
+						<a class="dropdown-item" href="{% url 'add-event' %}">Add Event</a>
+					</li>
+					<li class="nav-item">
+						<a class="dropdown-item" href="{% url 'my_events' %}"><strong>My Events</strong></a>
+					</li>
+				{% endif %}
 			</ul>
 		</li>
 		<li class="nav-item dropdown">
@@ -26,9 +34,11 @@
 				<li class="nav-item">
 					<a class="dropdown-item" href="{% url 'list-venues' %}">Show Venues</a>
 				</li>
-				<li class="nav-item">
-					<a class="dropdown-item" href="{% url 'add-venue' %}">Add Venue</a>
-				</li>
+				{% if user.is_authenticated %}
+					<li class="nav-item">
+						<a class="dropdown-item" href="{% url 'add-venue' %}">Add Venue</a>
+					</li>
+				{% endif %}
 			</ul>
 		</li>
 		<li class="nav-item dropdown">
