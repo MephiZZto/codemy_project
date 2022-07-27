@@ -252,9 +252,12 @@ def search_venues(request):
 def show_venue(request, venue_id):
 	venue = Venue.objects.get(pk=venue_id)
 	user = User.objects.get(pk=venue.owner)
+	# Grab the events for that venue
+	events = venue.event_set.all()
 	return render(request, 'events/show_venue.html', {
 		'venue': venue,
-		'user': user
+		'user': user,
+		'events': events,
 	})
 
 def list_venues(request):
