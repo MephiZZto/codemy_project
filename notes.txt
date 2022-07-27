@@ -116,3 +116,7 @@ def VIEWNAME(request):
 #static folder for .js .css stuff
 -create /static/APPNAME folder
 -add {% load static %} to html file
+#add global templates 'DIRS': ['PROJECTNAME/templates'],
+-create templates folder in project (no subfolder)
+-create base.html file in new folder
+-{% extends 'base.html' %} in apps html files as example
